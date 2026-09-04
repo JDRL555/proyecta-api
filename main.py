@@ -3,7 +3,12 @@ from fastapi import FastAPI, Depends
 from sqlmodel import Session, select
 
 from src.config import db
+
 from src.models.Users import User
+from src.models.Projects import ProjectType, ProjectCategory, ProjectCompanies, Project, ProjectCollabs
+from src.models.Task import TaskStatus, Task
+
+from src.routes.index import app_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -12,12 +17,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@app.get("/users")
-async def get_users(session: Session = Depends(db.get_session)):
-    users = session.exec(select(User)).all()
-    
-    return {"users": users}
+app.include_router(app_router)
